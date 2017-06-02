@@ -18,12 +18,33 @@ namespace XNACrazyGame
 
         protected Texture2D _texture;
 
+        public Rectangle Body
+        {
+            get
+            {
+                return new Rectangle((int)_position.X, (int)_position.Y, _texture.Width, _texture.Height);
+            }
+        }
+
+        private bool _isAlive;
+        public bool IsAlive
+        {
+            get { return _isAlive; }
+        }
+
+        public PlaneBase Destroy()
+        {
+            _isAlive = false;
+            return this;
+        }
+
         protected Rectangle _gameFieldRectangle;
 
         private static Random r = new Random();
         
         public PlaneBase(float speed, int health, Texture2D texture, Rectangle gameFieldRectangle)
         {
+            _isAlive = true;
             _speed = speed;
             _health = health;
 
@@ -45,9 +66,10 @@ namespace XNACrazyGame
             _position.Y += _speed;
         }
 
-        public bool IsOutsideBorders()
+        private bool CheckIfPlaneInGameFieldBorders()
         {
-            return _position.Y > _gameFieldRectangle.Height;
+            _isAlive = !(_position.Y + _texture.Height < 0);
+            return !_isAlive;
         }
         
         public abstract void Attack();
@@ -56,6 +78,7 @@ namespace XNACrazyGame
         public virtual void Update(GameTime gameTime)
         {
             Move();
+            CheckIfPlaneInGameFieldBorders();
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)

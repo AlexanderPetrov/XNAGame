@@ -19,6 +19,9 @@ namespace XNACrazyGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        SpriteFont _textFont;
+        Vector2 _textPosition;
+
         Texture2D _simplePlaneTexture;
         Texture2D _advancedPlaneTexture;
         Texture2D _powerfulPlaneTexture;
@@ -44,8 +47,8 @@ namespace XNACrazyGame
         public MainGameClass()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);// * 0.8);
-            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width);// * 0.8);
+            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.8);
+            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width * 0.8);
             Content.RootDirectory = "Content";
         }
 
@@ -64,7 +67,7 @@ namespace XNACrazyGame
             _planesBuffer = new List<PlaneBase>();
             _rocketsBuffer = new List<Rocket>();
             
-            graphics.ToggleFullScreen();
+            //graphics.ToggleFullScreen();
             
             base.Initialize();
         }
@@ -79,8 +82,11 @@ namespace XNACrazyGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _gameFieldRectangle = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            _textPosition = new Vector2(0, 0);
 
             _backgroundTexture = this.Content.Load<Texture2D>(@"Background");
+
+            _textFont = this.Content.Load<SpriteFont>(@"PrintFont");
 
             _simplePlaneTexture = this.Content.Load<Texture2D>(@"Planes\plane_1");
             _advancedPlaneTexture = this.Content.Load<Texture2D>(@"Planes\plane_2");
@@ -115,11 +121,37 @@ namespace XNACrazyGame
             HandleKeyboard(gameTime);
             UpdatePlanes(gameTime);
             UpdateRockets();
-
+            CheckCollisions();
             _cannon.Update(gameTime);
             SpawnEnemy(gameTime);
 
             base.Update(gameTime);
+        }
+
+        private List<Vector2> CheckCollisions()
+        {
+            List<Rocket> destroyedRockets = new List<Rocket>();
+            List<PlaneBase> destroyedPlanes = new List<PlaneBase>();
+
+            List<Vector2> explodions = new List<Vector2>();
+            for (int i = 0; i < _rockets.Count; i++)
+            {
+                for (int j = 0; j < _planes.Count; j++)
+                {
+                    if (_rockets[i].Body.Intersects(_planes[j].Body))
+                    {
+                        destroyedRockets.Add(_rockets[i].Destroy());
+                        destroyedPlanes.Add(_planes[j].Destroy());
+
+                        explodions.Add(_rockets[i].Position);
+                    }
+                }
+            }
+
+            _rockets = _rockets.Except(destroyedRockets).ToList();
+            _planes = _planes.Except(destroyedPlanes).ToList();
+
+            return explodions;
         }
 
         private void SpawnEnemy(GameTime gameTime)
@@ -149,14 +181,14 @@ namespace XNACrazyGame
             for (int i = 0; i < _planes.Count; i++)
             {
                 _planes[i].Update(gameTime);
-                if (!_planes[i].IsOutsideBorders())
-                {
-                    _planesBuffer.Add(_planes[i]);
-                }
+                //if (_planes[i].IsAlive)
+                //{
+                //    _planesBuffer.Add(_planes[i]);
+                //}
             }
 
-            _planes = new List<PlaneBase>(_planesBuffer);
-            _planesBuffer.Clear();
+            //_planes = new List<PlaneBase>(_planesBuffer);
+            //_planesBuffer.Clear();
         }
 
         public void UpdateRockets()
@@ -164,14 +196,14 @@ namespace XNACrazyGame
             for (int i = 0; i < _rockets.Count; i++)
             {
                 _rockets[i].Update();
-                if (!_rockets[i].IsOutOfBorders())
-                {
-                    _rocketsBuffer.Add(_rockets[i]);
-                }
+                //if (_rockets[i].IsAlive)
+                //{
+                //    _rocketsBuffer.Add(_rockets[i]);
+                //}
             }
 
-            _rockets = new List<Rocket>(_rocketsBuffer);
-            _rocketsBuffer.Clear();
+            //_rockets = new List<Rocket>(_rocketsBuffer);
+            //_rocketsBuffer.Clear();
         }
 
         /// <summary>
@@ -187,8 +219,8 @@ namespace XNACrazyGame
             spriteBatch.Draw(_backgroundTexture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero,
                 new Vector2(2,2), SpriteEffects.None, 0);
 
-            //spriteBatch.Draw(_backgroundTexture, Vector2.Zero, Color.White);
-
+            var text = string.Format("Planes: {0}\nRockets: {1}", _planes.Count, _rockets.Count);
+            spriteBatch.DrawString(_textFont, text, _textPosition, Color.Black);
             for (int i = 0; i < _planes.Count; i++)
             {
                 _planes[i].Draw(gameTime, spriteBatch);

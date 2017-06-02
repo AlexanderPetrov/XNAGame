@@ -13,15 +13,23 @@ namespace XNACrazyGame
         Texture2D _texture;
         Vector2 _position;
 
+        public Vector2 Position { get { return _position; } }
+        public Rectangle Body {
+            get
+            {
+                return new Rectangle((int)_position.X, (int)_position.Y, _texture.Width, _texture.Height);
+            }
+        }
+
         int _speed = 6;
-        int _demage;
+        int _damage;
 
         Rectangle _gameFieldRectangle;
 
         public Rocket(Vector2 position, int demage, Texture2D texture, Rectangle gameFieldRectangle)
         {
             _position = position;
-            _demage = demage;
+            _damage = demage;
             _texture = texture;
             _gameFieldRectangle = gameFieldRectangle;
         }
@@ -31,14 +39,28 @@ namespace XNACrazyGame
             _position.Y -= _speed;
         }
 
-        public bool IsOutOfBorders()
+        private bool CheckIfRocketInGameFieldBorders()
         {
-            return false;
+            _isAlive = !(_position.Y < 0);
+            return !_isAlive;
+        }
+
+        private bool _isAlive;
+        public bool IsAlive 
+        {
+            get { return _isAlive; } 
+        }
+
+        public Rocket Destroy()
+        {
+            _isAlive = false;
+            return this;
         }
 
         public void Update()
         {
             Move();
+            CheckIfRocketInGameFieldBorders();
         }
 
         public void Draw(SpriteBatch spriteBatch)
