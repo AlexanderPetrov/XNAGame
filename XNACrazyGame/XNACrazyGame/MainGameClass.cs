@@ -47,8 +47,8 @@ namespace XNACrazyGame
         public MainGameClass()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.8);
-            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width * 0.8);
+            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);// * 0.8);
+            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width);// * 0.8);
             Content.RootDirectory = "Content";
         }
 
@@ -67,7 +67,7 @@ namespace XNACrazyGame
             _planesBuffer = new List<PlaneBase>();
             _rocketsBuffer = new List<Rocket>();
             
-            //graphics.ToggleFullScreen();
+            graphics.ToggleFullScreen();
             
             base.Initialize();
         }
@@ -181,14 +181,7 @@ namespace XNACrazyGame
             for (int i = 0; i < _planes.Count; i++)
             {
                 _planes[i].Update(gameTime);
-                //if (_planes[i].IsAlive)
-                //{
-                //    _planesBuffer.Add(_planes[i]);
-                //}
             }
-
-            //_planes = new List<PlaneBase>(_planesBuffer);
-            //_planesBuffer.Clear();
         }
 
         public void UpdateRockets()
@@ -196,14 +189,7 @@ namespace XNACrazyGame
             for (int i = 0; i < _rockets.Count; i++)
             {
                 _rockets[i].Update();
-                //if (_rockets[i].IsAlive)
-                //{
-                //    _rocketsBuffer.Add(_rockets[i]);
-                //}
             }
-
-            //_rockets = new List<Rocket>(_rocketsBuffer);
-            //_rocketsBuffer.Clear();
         }
 
         /// <summary>
@@ -221,6 +207,7 @@ namespace XNACrazyGame
 
             var text = string.Format("Planes: {0}\nRockets: {1}", _planes.Count, _rockets.Count);
             spriteBatch.DrawString(_textFont, text, _textPosition, Color.Black);
+
             for (int i = 0; i < _planes.Count; i++)
             {
                 _planes[i].Draw(gameTime, spriteBatch);
