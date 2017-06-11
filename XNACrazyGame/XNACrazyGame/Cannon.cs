@@ -55,9 +55,9 @@ namespace XNACrazyGame
             KeyboardState kbState = Keyboard.GetState();
             _elapsedMilisecondsSinceLastReload += gameTime.ElapsedGameTime.Milliseconds;
 
-            if (kbState.IsKeyDown(Keys.Right))
+            if (kbState.IsKeyDown(Keys.Right) && _position.X + _texture.Width < _gameFieldRectangle.Width)
                 Move(1);
-            if (kbState.IsKeyDown(Keys.Left))
+            if (kbState.IsKeyDown(Keys.Left) && _position.X > 0)
                 Move(-1);
         }
 

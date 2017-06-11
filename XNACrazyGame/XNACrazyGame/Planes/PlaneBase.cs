@@ -26,6 +26,14 @@ namespace XNACrazyGame
             }
         }
 
+        public Vector2 PositionOrigin 
+        { 
+            get
+            {
+                return new Vector2(_position.X + (_texture.Width / 2), _position.Y + (_texture.Height / 2));
+            }
+        }
+
         private bool _isAlive;
         public bool IsAlive
         {
@@ -68,8 +76,8 @@ namespace XNACrazyGame
 
         private bool CheckIfPlaneInGameFieldBorders()
         {
-            _isAlive = !(_position.Y + _texture.Height < 0);
-            return !_isAlive;
+            _isAlive = !(_position.Y > _gameFieldRectangle.Height);
+            return _isAlive;
         }
         
         public abstract void Attack();

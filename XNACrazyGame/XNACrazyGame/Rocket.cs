@@ -42,7 +42,7 @@ namespace XNACrazyGame
         private bool CheckIfRocketInGameFieldBorders()
         {
             _isAlive = !(_position.Y < 0);
-            return !_isAlive;
+            return _isAlive;
         }
 
         private bool _isAlive;

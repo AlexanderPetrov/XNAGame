@@ -42,6 +42,8 @@ namespace XNACrazyGame
         int enemySpawnTimeInSeconds = 1;
         int elapsedMiliseconds = 0;
 
+        int _score = 0;
+
         static Random r = new Random();
 
         public MainGameClass()
@@ -122,6 +124,7 @@ namespace XNACrazyGame
             UpdatePlanes(gameTime);
             UpdateRockets();
             CheckCollisions();
+            CheckObjectsOutsideGameField();
             _cannon.Update(gameTime);
             SpawnEnemy(gameTime);
 
@@ -151,7 +154,25 @@ namespace XNACrazyGame
             _rockets = _rockets.Except(destroyedRockets).ToList();
             _planes = _planes.Except(destroyedPlanes).ToList();
 
+            _score += explodions.Count;
             return explodions;
+        }
+
+        private void CheckObjectsOutsideGameField()
+        {
+            List<Rocket> rocketsOutsideGameField = new List<Rocket>();
+            List<PlaneBase> planesOutsideGameField = new List<PlaneBase>();
+
+            for (int i = 0; i < _rockets.Count; i++)
+                if (!_rockets[i].IsAlive)
+                    rocketsOutsideGameField.Add(_rockets[i]);
+
+            for (int i = 0; i < _planes.Count; i++)
+                if (!_planes[i].IsAlive)
+                    planesOutsideGameField.Add(_planes[i]);
+
+            _rockets = _rockets.Except(rocketsOutsideGameField).ToList();
+            _planes = _planes.Except(planesOutsideGameField).ToList();
         }
 
         private void SpawnEnemy(GameTime gameTime)
@@ -205,7 +226,7 @@ namespace XNACrazyGame
             spriteBatch.Draw(_backgroundTexture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero,
                 new Vector2(2,2), SpriteEffects.None, 0);
 
-            var text = string.Format("Planes: {0}\nRockets: {1}", _planes.Count, _rockets.Count);
+            var text = string.Format("Planes: {0}\nRockets: {1}\nScore: {2}", _planes.Count, _rockets.Count, _score);
             spriteBatch.DrawString(_textFont, text, _textPosition, Color.Black);
 
             for (int i = 0; i < _planes.Count; i++)
