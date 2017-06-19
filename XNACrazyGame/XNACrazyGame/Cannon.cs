@@ -13,7 +13,7 @@ namespace XNACrazyGame
         private const int RELOAD_TIME_IN_MILISECONDS = 250;
 
         Vector2 _position;
-        int _speed = 6;
+        int _speed = 7;
 
         int _elapsedMilisecondsSinceLastReload;
         

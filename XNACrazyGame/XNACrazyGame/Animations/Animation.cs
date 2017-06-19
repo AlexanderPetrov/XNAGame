@@ -16,10 +16,11 @@ namespace XNACrazyGame.Animations
         protected Vector2 _position;
         protected float _elapsedTime;
         protected bool _isPlaying;
+        protected int _animationIndex;
 
         public bool IsPlaying { get { return _isPlaying; } }
 
-        public Animation(Texture2D texture, int frameCount, float frameTime, Vector2 position)
+        public Animation(Texture2D texture, int frameCount, float frameTime, Vector2 position, int animationIndex = 0)
         {
             _texture = texture;
             _frameCount = frameCount;
@@ -28,6 +29,7 @@ namespace XNACrazyGame.Animations
             _currentFrame = 0;
             _elapsedTime = 0.0f;
             _isPlaying = true;
+            _animationIndex = animationIndex;
         }
 
         public abstract void Update(GameTime gameTime);

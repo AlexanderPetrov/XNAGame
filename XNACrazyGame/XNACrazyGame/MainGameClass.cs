@@ -53,8 +53,8 @@ namespace XNACrazyGame
         public MainGameClass()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);// * 0.8);
-            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width);// * 0.8);
+            graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.8);
+            graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width * 0.8);
             Content.RootDirectory = "Content";
         }
 
@@ -74,7 +74,7 @@ namespace XNACrazyGame
             _planesBuffer = new List<PlaneBase>();
             _rocketsBuffer = new List<Rocket>();
             
-            graphics.ToggleFullScreen();
+            //graphics.ToggleFullScreen();
             
             base.Initialize();
         }
@@ -153,7 +153,7 @@ namespace XNACrazyGame
                         destroyedRockets.Add(_rockets[i].Destroy());
                         destroyedPlanes.Add(_planes[j].Destroy());
 
-                        explodions.Add(_rockets[i].Position);
+                        explodions.Add(_planes[j].PositionOrigin);
                     }
                 }
             }
@@ -163,9 +163,9 @@ namespace XNACrazyGame
 
             _score += explodions.Count;
 
-            foreach (var explosion in explodions)
+            foreach (var explosionPos in explodions)
             {
-                _animations.Add(new ExplosionAnimation(_explosionTexture, 16, 0.01f, explosion));
+                _animations.Add(new ExplosionAnimation(_explosionTexture, 16, 0.01f, explosionPos));
             }
 
             return explodions;
