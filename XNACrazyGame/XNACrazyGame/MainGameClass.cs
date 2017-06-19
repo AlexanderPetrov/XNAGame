@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using XNACrazyGame.Animations;
 
 namespace XNACrazyGame
 {
@@ -26,10 +27,13 @@ namespace XNACrazyGame
         Texture2D _advancedPlaneTexture;
         Texture2D _powerfulPlaneTexture;
         Texture2D _bossPlaneTexture;
+        Texture2D _explosionTexture;
+
 
         Texture2D _cannonTexture;
         Texture2D _backgroundTexture;
 
+        List<Animation> _animations;
         List<PlaneBase> _planes;
         List<PlaneBase> _planesBuffer;
         List<Rocket> _rockets;
@@ -65,6 +69,7 @@ namespace XNACrazyGame
             // TODO: Add your initialization logic here
             _planes = new List<PlaneBase>();
             _rockets = new List<Rocket>();
+            _animations = new List<Animation>();
 
             _planesBuffer = new List<PlaneBase>();
             _rocketsBuffer = new List<Rocket>();
@@ -94,6 +99,7 @@ namespace XNACrazyGame
             _advancedPlaneTexture = this.Content.Load<Texture2D>(@"Planes\plane_2");
             _powerfulPlaneTexture = this.Content.Load<Texture2D>(@"Planes\plane_3");
             _bossPlaneTexture = this.Content.Load<Texture2D>(@"Planes\plane_4");
+            _explosionTexture = this.Content.Load<Texture2D>(@"explosions");
 
             _cannonTexture = this.Content.Load<Texture2D>(@"Cannon");
             _rocketTexture = this.Content.Load<Texture2D>(@"Rocket");
@@ -124,6 +130,7 @@ namespace XNACrazyGame
             UpdatePlanes(gameTime);
             UpdateRockets();
             CheckCollisions();
+            UpdateAnimations(gameTime);
             CheckObjectsOutsideGameField();
             _cannon.Update(gameTime);
             SpawnEnemy(gameTime);
@@ -155,7 +162,28 @@ namespace XNACrazyGame
             _planes = _planes.Except(destroyedPlanes).ToList();
 
             _score += explodions.Count;
+
+            foreach (var explosion in explodions)
+            {
+                _animations.Add(new ExplosionAnimation(_explosionTexture, 16, 0.01f, explosion));
+            }
+
             return explodions;
+        }
+
+        private void UpdateAnimations(GameTime gameTime)
+        {
+            List<Animation> playedAnimations = new List<Animation>();
+            for (int i = 0; i < _animations.Count; i++)
+            {
+                _animations[i].Update(gameTime);
+                if (!_animations[i].IsPlaying)
+                {
+                    playedAnimations.Add(_animations[i]);
+                }
+            }
+
+            _animations = _animations.Except(playedAnimations).ToList();
         }
 
         private void CheckObjectsOutsideGameField()
@@ -212,6 +240,7 @@ namespace XNACrazyGame
                 _rockets[i].Update();
             }
         }
+            
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -238,6 +267,11 @@ namespace XNACrazyGame
             for (int i = 0; i < _rockets.Count; i++)
             {
                 _rockets[i].Draw(spriteBatch);
+            }
+
+            for (int i = 0; i < _animations.Count; i++)
+            {
+                _animations[i].Draw(spriteBatch);
             }
 
             spriteBatch.End();
